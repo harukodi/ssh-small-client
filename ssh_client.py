@@ -11,6 +11,13 @@ with open ("servers.json", "r") as servers_file:
     servers_data = json.load(servers_file)
 
 def execute_command(hostname, username, command, sudo_pass=""):
+    def is_reboot_command(command):
+        power_suffixes = ["shutdown", "reboot", "poweroff", "halt"]
+        if any(power_suffix in command.lower() for power_suffix in power_suffixes):
+            return True
+        else:
+            return False
+        
     ssh_client = paramiko.SSHClient()
     ssh_client.get_host_keys()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -21,9 +28,14 @@ def execute_command(hostname, username, command, sudo_pass=""):
         stdin, stdout, stderr = ssh_client.exec_command(modified_command)
         with print_lock:
             output = stdout.read().decode()
-            print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{output}{Style.RESET_ALL}")
-            if output == "":
-                print(f"{Fore.CYAN}Sudo password is incorrect or was not provided.{Style.RESET_ALL}")
+            err_output = stderr.read().decode()
+            if output:
+                print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{output}{Style.RESET_ALL}")
+            elif err_output:
+                print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{err_output}{Style.RESET_ALL}")
+            if is_reboot_command(modified_command) == True:
+                print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}")
+                print("Connection closed!")
     else:
         stdin, stdout, stderr = ssh_client.exec_command(command)
         with print_lock:

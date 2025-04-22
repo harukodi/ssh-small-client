@@ -26,9 +26,5 @@ Paste this to the servers.json file
 ```
 ## Run the program with threading
 ```bash
-python ssh_client_multithreaded.py --command "whoami"
-```
-## Run the program with sequential execution
-```bash
-python ssh_client_sequential.py --command "whoami"
+python ssh_client.py --command "whoami"
 ```
