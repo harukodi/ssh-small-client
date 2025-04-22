@@ -32,7 +32,8 @@ def execute_command(hostname, username, command, sudo_pass=""):
             if output:
                 print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{output}{Style.RESET_ALL}")
             elif err_output:
-                print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{err_output}{Style.RESET_ALL}")
+                if not "[sudo]" in err_output:
+                    print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{err_output}{Style.RESET_ALL}")
             if is_reboot_command(modified_command) == True:
                 print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}")
                 print("Connection closed!")
