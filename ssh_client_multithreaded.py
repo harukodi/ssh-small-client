@@ -10,11 +10,11 @@ args = arg_parser.parse_args()
 with open ("servers.json", "r") as servers_file:
     servers_data = json.load(servers_file)
 
-def execute_command(hostname, command, sudo_pass=""):
+def execute_command(hostname, username, command, sudo_pass=""):
     ssh_client = paramiko.SSHClient()
     ssh_client.get_host_keys()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh_client.connect(hostname)
+    ssh_client.connect(hostname=hostname, username=username)
     full_command = command
     if command.startswith("sudo"):
         modified_command = full_command.replace('sudo', f'echo "{sudo_pass}" | sudo -S')
@@ -35,8 +35,9 @@ threads = []
 
 for server in servers_data["servers"]:
     hostname = server["hostname"]
+    username = server["username"]
     sudo_pass = server["sudo_pass"]
-    ssh_thread = threading.Thread(target=execute_command, args=(hostname, args.command, sudo_pass))
+    ssh_thread = threading.Thread(target=execute_command, args=(hostname, username, args.command, sudo_pass))
     threads.append(ssh_thread)
     ssh_thread.start()
 for thread in threads:

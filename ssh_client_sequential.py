@@ -14,8 +14,9 @@ with open ("servers.json", "r") as servers_file:
 def execute_command(command):
     for server in servers_data["servers"]:
         hostname = server["hostname"]
+        username = server["username"]
         sudo_pass = server["sudo_pass"]
-        ssh_client.connect(hostname)
+        ssh_client.connect(hostname=hostname, username=username)
         full_command = command
         if command.startswith("sudo"):
             modified_command = full_command.replace('sudo', f'echo "{sudo_pass}" | sudo -S')
