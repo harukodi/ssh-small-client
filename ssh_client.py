@@ -6,7 +6,6 @@ print_lock = threading.Lock()
 arg_parser.add_argument("-c", "--command", help="Command to execute on remote servers")
 args = arg_parser.parse_args()
 
-
 with open ("servers.json", "r") as servers_file:
     servers_data = json.load(servers_file)
 
@@ -46,7 +45,6 @@ def execute_command(hostname, username, command, sudo_pass=""):
 
 def start_threads():
     threads = []
-    
     for server in servers_data["servers"]:
         hostname = server["hostname"]
         username = server["username"]
