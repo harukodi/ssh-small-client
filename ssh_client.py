@@ -32,7 +32,7 @@ def execute_command(hostname, username, command, sudo_pass=""):
             if output:
                 print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{output}{Style.RESET_ALL}")
             elif err_output:
-                if not "[sudo]" in err_output:
+                if is_reboot_command(modified_command) == False:
                     print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{err_output}{Style.RESET_ALL}")
             if is_reboot_command(modified_command) == True:
                 print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}")
@@ -44,14 +44,24 @@ def execute_command(hostname, username, command, sudo_pass=""):
             print(f"{Fore.GREEN}Hostname:{Style.RESET_ALL} {Fore.YELLOW}{hostname}{Style.RESET_ALL}\n{Fore.CYAN}{output}{Style.RESET_ALL}")
     ssh_client.close()
 
-threads = []
-
-for server in servers_data["servers"]:
-    hostname = server["hostname"]
-    username = server["username"]
-    sudo_pass = server["sudo_pass"]
-    ssh_thread = threading.Thread(target=execute_command, args=(hostname, username, args.command, sudo_pass))
-    threads.append(ssh_thread)
-    ssh_thread.start()
-for thread in threads:
-    thread.join()
+def start_threads():
+    threads = []
+    
+    for server in servers_data["servers"]:
+        hostname = server["hostname"]
+        username = server["username"]
+        sudo_pass = server["sudo_pass"]
+        ssh_thread = threading.Thread(target=execute_command, args=(hostname, username, args.command, sudo_pass))
+        threads.append(ssh_thread)
+        ssh_thread.start()
+    for thread in threads:
+        thread.join()
+        
+def count_total_servers():
+    total_servers = 0    
+    for _ in servers_data["servers"]:
+        total_servers += 1
+    print(f"{Fore.GREEN}Total servers:{Style.RESET_ALL} {Fore.YELLOW}{total_servers}{Style.RESET_ALL}")
+    
+start_threads()
+count_total_servers()
