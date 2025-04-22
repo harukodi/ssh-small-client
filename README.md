@@ -23,7 +23,7 @@ Paste this to the servers.json file
     ]
 }
 ```
-## Run the program
+## Run the program with threading
 ```bash
-python 
+python ssh_client_multithreaded.py --command "whoami"
 ```
